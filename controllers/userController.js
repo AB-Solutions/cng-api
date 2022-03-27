@@ -51,8 +51,41 @@ const getUsers = asyncHandler(async (req, res) => {
     res.status(200).json(users);
 });
 
+/*
+ * Controller for validating user existence
+ * route: /api/users/exists
+ * returns users
+ */
+const userExists = asyncHandler(async (req, res) => {
+    const {
+        phoneNumber,
+        id,
+    } = req.body;
+
+    let queryParams = {};
+
+    if (phoneNumber) {
+        queryParams.phoneNumber = phoneNumber
+    }
+    if (id) {
+        queryParams.id = id
+    }
+
+    if (!queryParams.id && !queryParams.phoneNumber) {
+        res.status(400);
+        throw new Error('phoneNumber or id is missing in the body');
+    }
+
+    console.log('queryParams is : ', JSON.stringify(queryParams));
+
+    const user = await User.find(queryParams);
+
+    res.status(200).json(user);
+});
+
 
 module.exports = {
     registerUser,
     getUsers,
+    userExists,
 };
